@@ -20,6 +20,8 @@ namespace NguyenHoangViet_2011061300_BigSchool.Models
         public Category Category { get; set; }
         [Required]
         public string CategoryId { get; set; }
+
+        
     }
     
 }

@@ -1,4 +1,5 @@
-﻿using NguyenHoangViet_2011061300_BigSchool.Models;
+﻿using Microsoft.AspNet.Identity;
+using NguyenHoangViet_2011061300_BigSchool.Models;
 using NguyenHoangViet_2011061300_BigSchool.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -11,19 +12,33 @@ namespace NguyenHoangViet_2011061300_BigSchool.Controllers
 
     public class CoursesController : Controller
     {
-        private readonly ApplicationDbContext _dbcontext;
+       private readonly ApplicationDbContext _dbcontext;
        public CoursesController()
         {
             _dbcontext = new ApplicationDbContext();
         }
         // GET: Courses
-        public ActionResult Create()
+        [Authorize]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        public ActionResult Create(CourseViewModel viewModel)
         {
-            var viewModel = new CourseViewModel
+            if (!ModelState.IsValid) 
             {
-                Categories = _dbcontext.Categories.ToList()
+                viewModel.Categories = _dbcontext.Categories.ToList();
+                return View("Create",viewModel);
+            }
+            var course = new Course
+            {
+                LectureId = User.Identity.GetUserId(),
+                DateTime = viewModel.GetDateTime(),
+                CategoryId = viewModel.Category,
+                Place = viewModel.Place
             };
-            return View(viewModel);
+            _dbcontext.Courses.Add(course);
+            _dbcontext.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
         }
 
 
